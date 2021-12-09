@@ -1,10 +1,12 @@
 const express = require("express");
 const app = express();
 const morgan = require("morgan");
-const mongoConnection = require("./controllers /db");
+const initRoute = require("./routes /tourRoute");
+const router = require("./routes /tourRoute");
 if (process.env.NODE_ENV == "developement") {
   app.use(morgan("tiny"));
 }
 
-mongoConnection(process.env.MONGO_URI);
+initRoute(app);
+app.use("/api/v1", router);
 module.exports = app;
