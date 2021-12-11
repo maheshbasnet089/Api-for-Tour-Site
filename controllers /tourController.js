@@ -34,14 +34,30 @@ function tourController() {
         });
       }
     },
-    getAllTours(req, res) {
+    async getAllTours(req, res) {
       try {
-        const tours = Tour.find();
+        const tours = await Tour.find();
         res.status(200).json({
           status: "success",
+
           data: {
+            result: tours.length,
             tours: tours,
           },
+        });
+      } catch (e) {
+        res.status(400).json({
+          status: "fail",
+          message: e,
+        });
+      }
+    },
+    deleteTour(req, res) {
+      try {
+        Tour.findById(req.params.id).remove().exec();
+        res.status(200).json({
+          data: null,
+          message: "Deleted Succefully",
         });
       } catch (e) {
         res.status(400).json({

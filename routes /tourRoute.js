@@ -1,9 +1,9 @@
 const tourController = require("../controllers /tourController");
+const router = require("express").Router();
 
-function initRoute(app) {
-  app.get("/", tourController().getAllTours);
-  app.post("/new", tourController().createTour);
-  app.get("/:id", tourController().getTour);
-}
+router.get("/tours", tourController().getAllTours);
+router.get("/tours/:id", tourController().getTour);
+router.post("/tours", tourController().createTour);
+router.get("/tours/delete/:id", tourController().deleteTour);
 
-module.exports = initRoute;
+module.exports = router;
