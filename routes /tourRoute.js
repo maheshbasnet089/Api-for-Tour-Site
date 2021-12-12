@@ -6,5 +6,6 @@ router.get("/tours/:id", tourController().getTour);
 router.post("/tours", tourController().createTour);
 router.get("/tours/delete/:id", tourController().deleteTour);
 router.patch("/tours/update/:id", tourController().updateTour);
+router.get("/tours/topTours", tourController().topTours);
 
 module.exports = router;
