@@ -1,7 +1,13 @@
 const Tour = require("../model/tourModel");
+const APIFeatures = require("../utils /apiFeatures");
 
 function tourController() {
   return {
+    // async topTours(req, res) {
+    //   req.query.limit = "5";
+    //   req.query.sort = "-ratingsAverage,price";
+    //   req.query.fields = "name,price,ratingsAverage,summary,difficulty";
+    // },
     async getTour(req, res) {
       try {
         const tour = await Tour.findById(req.params.id);
@@ -36,13 +42,18 @@ function tourController() {
     },
     async getAllTours(req, res) {
       try {
-        const tours = await Tour.find();
+        const features = new APIFeatures(Tour.find(), req.query)
+          .filter()
+          .limitFields()
+          .sort()
+          .paginate();
+        const tours = await features.query;
         res.status(200).json({
           status: "success",
 
           data: {
             result: tours.length,
-            tours: tours,
+            tours,
           },
         });
       } catch (e) {
