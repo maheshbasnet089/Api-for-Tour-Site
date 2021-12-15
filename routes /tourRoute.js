@@ -3,6 +3,7 @@ const router = require("express").Router();
 
 router.get("/tours", tourController().getAllTours);
 router.get("/tours/tour-stats", tourController().getTourStats);
+router.get("/tours/getMonthlyPlan/:year", tourController().getTourStats);
 
 router.get("/tours/:id", tourController().getTour);
 
