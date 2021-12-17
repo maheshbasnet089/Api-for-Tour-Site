@@ -52,6 +52,7 @@ const tourSchema = new Schema(
       type: Number,
       validate: {
         validator: function (val) {
+          //this only points to new document created not for updated doc
           return val < this.price;
         },
         message: "Discount price ({VALUE}) less than actual price",
