@@ -9,7 +9,7 @@ const tourSchema = new Schema(
       required: [true, "A tour must have name "],
       unique: true,
       trim: true,
-      maxlength: [40, "A tour name must have less or equal to 40 characters "],
+      maxlength: [40, "A tour name must have less or equal to 40 characters "], //maxlength only from string
       minlength: [10, " A tour name must be atleast 10 character"],
     },
     slug: String,
@@ -26,7 +26,7 @@ const tourSchema = new Schema(
       required: [true, "A tour must have difficulty level"],
       enum: {
         values: ["easy", "medium", "hard"],
-        message: "Difficult should be either easy, medium or hard",
+        message: "Difficult should be either easy, medium or hard", // In case of error
       },
       default: "medium",
     },
@@ -54,7 +54,7 @@ const tourSchema = new Schema(
       },
       summary: {
         type: String,
-        trim: String,
+        trim: String, // trims the input .example " Manish" => "Manish"
         required: [true, "A tour must have summary"],
       },
       description: {
@@ -79,19 +79,21 @@ const tourSchema = new Schema(
     },
   },
   {
-    toJSON: { virtuals: true },
-    toObject: { virtuals: true },
+    toJSON: { virtuals: true }, //while outputing in JSON format , the created virtual property will also be displayed
+    toObject: { virtuals: true }, //while output is in Object, the virtual property created will be displayed
   }
 );
 
 //with get virtual method ,  existing document field => new document field but not saved on DB
 tourSchema.virtual("durationWeeks").get(function () {
-  return this.duration / 7;
+  //canot be accesed while querying cause don't store in DB
+  return this.duration / 7; //always use regular functin inside mongoose model. cause this keyword is only accesed in those function
 });
 
 //Document middleware, runs before .save() and .create()
 
 tourSchema.pre("save", function (next) {
+  console.log(this); // this points to the document that was saved right before actually saved to the DB
   this.slug = slugify(this.name, { lower: true });
   next();
 });
