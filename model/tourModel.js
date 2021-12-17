@@ -12,6 +12,10 @@ const tourSchema = new Schema(
       maxlength: [40, "A tour name must have less or equal to 40 characters "], //maxlength only from string
       minlength: [10, " A tour name must be atleast 10 character"],
     },
+    secretTour: {
+      type: Boolean,
+      default: false,
+    },
     slug: String,
     duration: {
       type: Number,
@@ -72,10 +76,6 @@ const tourSchema = new Schema(
         select: false,
       },
       startDates: [Date],
-      secretTour: {
-        type: Boolean,
-        default: false,
-      },
     },
   },
   {
@@ -93,15 +93,34 @@ tourSchema.virtual("durationWeeks").get(function () {
 //Document middleware, runs before .save() and .create()
 
 tourSchema.pre("save", function (next) {
-  console.log(this); // this points to the document that was saved right before actually saved to the DB
+  //function takes only one paramter next
+  // console.log(this); // this points to the document that was saved right before actually saved to the DB
   this.slug = slugify(this.name, { lower: true });
   next();
 });
 
+// tourSchema.post('save',function(doc,next){ // post save middleware or hook take two parameter in funcition . Doc=> which is saved
+//   console.log(doc)
+//   next()
+// })
+
 //query middleware
-tourSchema.pre("find", function (next) {
-  this.find({ secretTour: { $ne: true } });
+tourSchema.pre(/^find/, function (next) {
+  // /^find/ is the regex for finding all the query starting with find eg.: find, findOne
+  this.find({ secretTour: { $ne: true } }); // this refers to the query not document
   this.start = Date.now();
+  next();
+});
+
+tourSchema.post(/^find/, function (docs, next) {
+  console.log(`Query took ${Date.now() - this.start} milliseconds ✨`);
+  // console.log(docs);
+  next();
+});
+
+tourSchema.pre("aggregate", function (next) {
+  this.pipeline().unshift({ $match: { secretTour: { $ne: true } } });
+  console.log(this.pipeline());
   next();
 });
 
