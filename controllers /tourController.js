@@ -1,5 +1,6 @@
 const Tour = require("../model/tourModel");
 const APIFeatures = require("../utils /apiFeatures");
+const AppError = require("../utils /appError");
 
 function tourController() {
   return {
@@ -8,8 +9,11 @@ function tourController() {
     //   req.query.sort = "-ratingsAverage,price";
     //   req.query.fields = "name,price,ratingsAverage,summary,difficulty";
     // },
-    async getTour(req, res) {
+    async getTour(req, res, next) {
       const tour = await Tour.findById(req.params.id);
+      if (!tour) {
+        return next(new AppError("No tour found with that ID", 404));
+      }
       res.status(200).json({
         status: "success",
         data: {
@@ -42,9 +46,12 @@ function tourController() {
         },
       });
     },
-    deleteTour(req, res) {
+    async deleteTour(req, res, next) {
       try {
-        Tour.findById(req.params.id).remove().exec();
+        const tour = await Tour.findByIdAndDelete(req.params.id);
+        if (!tour) {
+          return next(new AppError("No tour found with that ID", 404));
+        }
         res.status(200).json({
           data: null,
           message: "Deleted Succefully",
@@ -56,11 +63,14 @@ function tourController() {
         });
       }
     },
-    async updateTour(req, res) {
+    async updateTour(req, res, next) {
       const tour = await Tour.findByIdAndUpdate(req.params.id, req.body, {
         new: true,
         runValidators: true,
       });
+      if (!tour) {
+        return next(new AppError("No tour found with that ID", 404));
+      }
       res.status(200).json({
         status: "success",
         data: {

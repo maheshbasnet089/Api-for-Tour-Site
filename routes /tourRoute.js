@@ -6,7 +6,7 @@ router.get("/", catchAsync(tourController().getAllTours));
 router.get("/tour-stats", catchAsync(tourController().getTourStats));
 router.get("/getMonthlyPlan/:year", catchAsync(tourController().getTourStats));
 
-router.get("/tours/:id", catchAsync(tourController().getTour));
+router.get("/:id", catchAsync(tourController().getTour));
 
 router.post("/", catchAsync(tourController().createTour));
 router.get("/delete/:id", tourController().deleteTour);
