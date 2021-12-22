@@ -1,15 +1,16 @@
 const tourController = require("../controllers /tourController");
 const router = require("express").Router();
+const catchAsync = require("../utils /catchAsync");
 
-router.get("/", tourController().getAllTours);
-router.get("/tour-stats", tourController().getTourStats);
-router.get("/getMonthlyPlan/:year", tourController().getTourStats);
+router.get("/", catchAsync(tourController().getAllTours));
+router.get("/tour-stats", catchAsync(tourController().getTourStats));
+router.get("/getMonthlyPlan/:year", catchAsync(tourController().getTourStats));
 
-router.get("/tours/:id", tourController().getTour);
+router.get("/tours/:id", catchAsync(tourController().getTour));
 
-router.post("/", tourController().createTour);
+router.post("/", catchAsync(tourController().createTour));
 router.get("/delete/:id", tourController().deleteTour);
-router.patch("/update/:id", tourController().updateTour);
+router.patch("/update/:id", catchAsync(tourController().updateTour));
 // router.get("/tours/topTours", tourController().topTours);
 
 module.exports = router;
