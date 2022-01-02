@@ -5,9 +5,17 @@ const handleCastErrorDB = (err) => {
 };
 
 const handleDuplicateFieldErrorDB = (err) => {
-  const value = err.errmsg.match(/(["'])(?:(?=(\\?))\2.)*?\1/)[0];
-  console.log(value);
+  const value = err.errmsg.match(/(["'])(?:\\.|[^\\])*?\1/)[0];
+  // console.log(value);
   const message = `The value ${value} already exists , please use another value `;
+  return new AppError(message, 400);
+};
+const handleValidationErrorDB = (err) => {
+  const errors = Object.values(err.errors).map((el) => el.message);
+  // console.log(errors);
+  const message = `Invalid input data . ${errors.join(". ")}`;
+  // console.log(errors);
+  console.log(message);
   return new AppError(message, 400);
 };
 
@@ -48,6 +56,9 @@ module.exports = (err, req, res, next) => {
     if (err.name === "CastError") err = handleCastErrorDB(err);
     // erroisOperational = true;
     if ((err.code = 11000)) err = handleDuplicateFieldErrorDB(err);
+
+    if ((err.name = "ValidationError")) err = handleValidationErrorDB(err);
+
     sendErrorProd(err, res);
   }
 };
