@@ -4,6 +4,13 @@ const handleCastErrorDB = (err) => {
   return new AppError(message, 400);
 };
 
+const handleDuplicateFieldErrorDB = (err) => {
+  const value = err.errmsg.match(/(["'])(?:(?=(\\?))\2.)*?\1/)[0];
+  console.log(value);
+  const message = `The value ${value} already exists , please use another value `;
+  return new AppError(message, 400);
+};
+
 function sendErrorDev(err, res) {
   res.status(err.statusCode).json({
     status: err.status,
@@ -40,6 +47,7 @@ module.exports = (err, req, res, next) => {
 
     if (err.name === "CastError") err = handleCastErrorDB(err);
     // erroisOperational = true;
+    if ((err.code = 11000)) err = handleDuplicateFieldErrorDB(err);
     sendErrorProd(err, res);
   }
 };
