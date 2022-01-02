@@ -1,7 +1,9 @@
 const tourController = require("../controllers /tourController");
+const authController = require("../controllers /authController");
 const router = require("express").Router();
 const catchAsync = require("../utils /catchAsync");
 
+router.post("/signup", catchAsync(authController.signUp));
 router.get("/", catchAsync(tourController().getAllTours));
 router.get("/tour-stats", catchAsync(tourController().getTourStats));
 router.get("/getMonthlyPlan/:year", catchAsync(tourController().getTourStats));
