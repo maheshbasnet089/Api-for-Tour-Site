@@ -11,7 +11,7 @@ if (process.env.NODE_ENV == "developement") {
 
 app.use(express.json());
 
-app.use("/api/v1/tours", router);
+app.use("/api/v1", router);
 
 app.all("*", (req, res, next) => {
   // const err = new Error(`Cannot find path ${req.originalUrl} `);
