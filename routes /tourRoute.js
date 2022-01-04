@@ -22,6 +22,10 @@ router.patch("/tours/update/:id", catchAsync(tourController().updateTour));
 // router.get("/tours/topTours", tourController().topTours);
 
 //Users
-router.get("/users", userController.getAllUsers);
+router.get(
+  "/users",
+  authController.protectMiddleware,
+  userController.getAllUsers
+);
 
 module.exports = router;

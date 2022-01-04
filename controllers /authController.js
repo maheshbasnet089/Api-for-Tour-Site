@@ -49,3 +49,22 @@ exports.logIn = async (req, res, next) => {
     token,
   });
 };
+
+exports.protectMiddleware = (req, res, next) => {
+  //if there is token in req
+  const authorizationHeader = req.headers.authorization;
+  let token;
+  if (authorizationHeader && authorizationHeader.startsWith("Bearer")) {
+    // console.log(authorizationHeader);
+    token = authorizationHeader.split(" ")[1];
+    // console.log(token);
+  }
+
+  if (!token) {
+    return next(new AppError("You must be logged in!", 401));
+  }
+  //verify token
+
+  //redirect to protected route
+  next();
+};
