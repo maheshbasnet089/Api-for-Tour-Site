@@ -1,3 +1,4 @@
+const { promisify } = require("util");
 const User = require("../model/userModel");
 const jwt = require("jsonwebtoken");
 const AppError = require("../utils /appError");
@@ -14,6 +15,8 @@ exports.signUp = async (req, res, next) => {
     password: req.body.password,
     passwordConfirm: req.body.passwordConfirm,
     email: req.body.email,
+    passwordChangedAt: req.body.passwordChangedAt,
+    role: req.body.role,
   });
 
   //jsonwebtoken signin
@@ -50,7 +53,7 @@ exports.logIn = async (req, res, next) => {
   });
 };
 
-exports.protectMiddleware = (req, res, next) => {
+exports.protectMiddleware = async (req, res, next) => {
   //if there is token in req
   const authorizationHeader = req.headers.authorization;
   let token;
@@ -65,6 +68,36 @@ exports.protectMiddleware = (req, res, next) => {
   }
   //verify token
 
-  //redirect to protected route
+  const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
+  // console.log(decoded._id);
+
+  const currentUser = await User.findById(decoded.id);
+  // console.log(currentUser);
+  if (!currentUser) {
+    return next(
+      new AppError("The user belonging to this token no longer exists", 401)
+    );
+  }
+  //check if the used changed the password after the token was issued
+  if (currentUser.passwordChangedAfter(decoded.iat)) {
+    return next(
+      new AppError("User recently changed password,please login again ", 401)
+    );
+  }
+  //grant acces to protected route
+  req.user = currentUser;
   next();
+};
+
+//restrcting deleting tour to certain user authorization
+
+exports.restrictTo = (...roles) => {
+  return (req, res, next) => {
+    if (!roles.includes(req.user.role)) {
+      return next(
+        new AppError("You don't have permission to do that action ", 403)
+      );
+    }
+    next();
+  };
 };

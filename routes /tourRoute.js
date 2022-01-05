@@ -7,7 +7,11 @@ const userController = require("../controllers /userController");
 router.post("/users/signup", catchAsync(authController.signUp));
 router.post("/users/login", catchAsync(authController.logIn));
 
-router.get("/tours/", catchAsync(tourController().getAllTours));
+router.get(
+  "/tours/",
+  authController.protectMiddleware,
+  catchAsync(tourController().getAllTours)
+);
 router.get("/tours/tour-stats", catchAsync(tourController().getTourStats));
 router.get(
   "/tours/getMonthlyPlan/:year",
@@ -17,15 +21,18 @@ router.get(
 router.get("/tours/:id", catchAsync(tourController().getTour));
 
 router.post("/tours/", catchAsync(tourController().createTour));
-router.get("/tours/delete/:id", tourController().deleteTour);
+router.get(
+  "/tours/delete/:id",
+  authController.protectMiddleware,
+  authController.restrictTo("admin", "lead-guide"),
+  tourController().deleteTour
+);
 router.patch("/tours/update/:id", catchAsync(tourController().updateTour));
 // router.get("/tours/topTours", tourController().topTours);
 
 //Users
-router.get(
-  "/users",
-  authController.protectMiddleware,
-  userController.getAllUsers
-);
+router.get("/users", userController.getAllUsers);
+
+router.get("/users/:id", userController.deleteUser);
 
 module.exports = router;
