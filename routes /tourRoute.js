@@ -6,11 +6,14 @@ const userController = require("../controllers /userController");
 
 router.post("/users/signup", catchAsync(authController.signUp));
 router.post("/users/login", catchAsync(authController.logIn));
-router.post("/users/forgotPassword", authController.forgotPassword);
-router.patch("/users/resetPassword", authController.resetPassword);
-
+router.post("/users/forgotPassword", catchAsync(authController.forgotPassword));
+router.patch(
+  "/users/resetPassword/:token",
+  catchAsync(authController.resetPassword)
+);
 router.get(
   "/tours/",
+
   authController.protectMiddleware,
   catchAsync(tourController().getAllTours)
 );

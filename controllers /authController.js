@@ -3,6 +3,7 @@ const User = require("../model/userModel");
 const jwt = require("jsonwebtoken");
 const AppError = require("../utils /appError");
 const sendEmail = require("../utils /email");
+const { createHash } = require("crypto");
 
 const signInToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
@@ -154,4 +155,27 @@ exports.forgotPassword = async (req, res, next) => {
   }
 };
 
-exports.resetPassword = (req, res, next) => {};
+exports.resetPassword = async (req, res, next) => {
+  const notHashedToken = req.params.token;
+  const hashedToken = createHash("sha256").update(notHashedToken).digest("hex");
+  const user = await User.findOne({
+    passwordResetToken: hashedToken,
+    passwordResetTokenExpiresIn: { $gt: Date.now() },
+  });
+  //if token is not valiad or expired
+  if (!user) {
+    return next(new AppError("Invalid token or token is expired", 400));
+  }
+  user.password = req.body.password;
+  user.passwordConfirm = req.body.passwordConfirm;
+  user.passwordResetTokenExpiresIn = undefined;
+  user.passwordResetToken = undefined;
+  await user.save();
+
+  //sign in jwt token
+  const token = signInToken(user._id);
+  res.status(201).json({
+    status: "success",
+    token,
+  });
+};
