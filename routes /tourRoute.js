@@ -16,6 +16,13 @@ router.patch(
   authController.protectMiddleware,
   catchAsync(authController.updatePassword)
 );
+
+router.patch(
+  "/users/updateMe",
+  authController.protectMiddleware,
+  catchAsync(userController.updateMe)
+);
+
 router.get(
   "/tours/",
 
