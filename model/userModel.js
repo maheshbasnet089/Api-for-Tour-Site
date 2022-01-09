@@ -30,6 +30,11 @@ const userSchema = new Schema({
     minlength: 8,
     select: false,
   },
+  active: {
+    type: Boolean,
+    default: true,
+    select: false,
+  },
   passwordConfirm: {
     type: String,
     required: [true, "Please confirm your password"],
@@ -79,6 +84,11 @@ userSchema.methods.createResetToken = function () {
   this.passwordResetTokenExpiresIn = Date.now() + 10 * 60 * 1000;
   return resetToken;
 };
+
+userSchema.pre(/^find/, function (next) {
+  this.find({ active: { $ne: false } });
+  next();
+});
 
 //passwordReset changed Password at changed
 userSchema.pre("save", function (next) {

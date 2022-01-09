@@ -48,13 +48,10 @@ exports.updateMe = async (req, res, next) => {
   });
 };
 
-exports.deleteUser = async (req, res, next) => {
-  const { id } = req.params;
-  const deletedUser = await User.findByIdAndDelete(id);
-  console.log(deletedUser);
-  res.status(200).json({
+exports.deleteMe = async (req, res, next) => {
+  await User.findByIdAndUpdate(req.user.id, { active: false });
+  res.status(204).json({
     status: "success",
-    message: "Deleted Succesfully",
-    user: null,
+    data: null,
   });
 };

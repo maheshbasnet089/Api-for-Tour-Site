@@ -23,6 +23,12 @@ router.patch(
   catchAsync(userController.updateMe)
 );
 
+router.delete(
+  "/users/deleteMe",
+  authController.protectMiddleware,
+  catchAsync(userController.deleteMe)
+);
+
 router.get(
   "/tours/",
 
@@ -49,7 +55,5 @@ router.patch("/tours/update/:id", catchAsync(tourController().updateTour));
 
 //Users
 router.get("/users", userController.getAllUsers);
-
-router.get("/users/:id", userController.deleteUser);
 
 module.exports = router;
