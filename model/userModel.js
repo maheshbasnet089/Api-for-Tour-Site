@@ -65,7 +65,7 @@ userSchema.methods.passwordChangedAfter = function (tokenCreatedDate) {
     const getTimeStamp = parseInt(this.passwordChangedAt.getTime() / 1000, 10);
     return getTimeStamp > tokenCreatedDate;
   }
-  //false means password is not changet at all
+  //false means password is not changed at all
   return false;
 };
 
@@ -79,5 +79,12 @@ userSchema.methods.createResetToken = function () {
   this.passwordResetTokenExpiresIn = Date.now() + 10 * 60 * 1000;
   return resetToken;
 };
+
+//passwordReset changed Password at changed
+userSchema.pre("save", function (next) {
+  if (!this.isModified("password") || this.isNew) return next();
+  this.passwordChangedAt = Date.now() - 1000;
+  next();
+});
 
 module.exports = mongoose.model("User", userSchema);

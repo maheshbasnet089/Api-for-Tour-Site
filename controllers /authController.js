@@ -11,6 +11,17 @@ const signInToken = (id) => {
   });
 };
 
+const createToken = (user, statusCode, res) => {
+  const token = signInToken(user._id);
+  res.status(statusCode).json({
+    status: "sucess",
+    token,
+    data: {
+      user,
+    },
+  });
+};
+
 exports.signUp = async (req, res, next) => {
   const newUser = await User.create({
     name: req.body.name,
@@ -21,16 +32,17 @@ exports.signUp = async (req, res, next) => {
     role: req.body.role,
   });
 
-  //jsonwebtoken signin
-  const token = signInToken(newUser._id);
-  // console.log(token);
-  res.status(201).json({
-    status: "success",
-    token,
-    data: {
-      user: newUser,
-    },
-  });
+  createToken(newUser, 201, res);
+  // //jsonwebtoken signin
+  // const token = signInToken(newUser._id);
+  // // console.log(token);
+  // res.status(201).json({
+  //   status: "success",
+  //   token,
+  //   data: {
+  //     user: newUser,
+  //   },
+  // });
 };
 
 exports.logIn = async (req, res, next) => {
@@ -48,11 +60,7 @@ exports.logIn = async (req, res, next) => {
     return next(new AppError("Invalid email or password", 401));
   }
 
-  const token = signInToken(user._id);
-  res.status(200).json({
-    status: "success",
-    token,
-  });
+  createToken(user, 201, res);
 };
 
 exports.protectMiddleware = async (req, res, next) => {
@@ -173,9 +181,20 @@ exports.resetPassword = async (req, res, next) => {
   await user.save();
 
   //sign in jwt token
-  const token = signInToken(user._id);
-  res.status(201).json({
-    status: "success",
-    token,
-  });
+  createToken(user, 201, res);
+};
+
+exports.updatePassword = async (req, res, next) => {
+  //find user
+  const user = await User.findById(req.user._id).select("+password");
+  //check if currentEntered Password matches DB password
+  if (!(await user.comparePasswords(req.body.passwordCurrent, user.password))) {
+    return next(new AppError("Please enter correct current Password", 401));
+  }
+  //if password matches then update password
+  user.password = req.body.password;
+  user.passwordConfirm = req.body.passwordConfirm;
+  await user.save();
+  // we do .save() but not findBYIDAndupdate because there is no validation in findbyidandupdate and presave hooks does not come inton action
+  createToken(user, 200, res);
 };

@@ -11,6 +11,11 @@ router.patch(
   "/users/resetPassword/:token",
   catchAsync(authController.resetPassword)
 );
+router.patch(
+  "/users/updateMyPassword",
+  authController.protectMiddleware,
+  catchAsync(authController.updatePassword)
+);
 router.get(
   "/tours/",
 
