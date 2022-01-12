@@ -78,6 +78,30 @@ const tourSchema = new Schema(
       },
       startDates: [Date],
     },
+    startLocation: {
+      //Geo JSon
+      type: {
+        type: String,
+        default: "Point",
+        enum: ["Point"],
+      },
+      coordinates: [Number],
+      address: String,
+      description: String,
+    },
+    locations: [
+      {
+        type: {
+          type: String,
+          default: "Point",
+          enum: ["Point"],
+        },
+        coordinates: [Number],
+        address: String,
+        description: String,
+        day: Number,
+      },
+    ],
   },
   {
     toJSON: { virtuals: true }, //while outputing in JSON format , the created virtual property will also be displayed

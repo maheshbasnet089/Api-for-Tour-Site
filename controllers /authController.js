@@ -10,9 +10,22 @@ const signInToken = (id) => {
     expiresIn: process.env.JWT_EXPIRES_IN,
   });
 };
+const cookieOptions = {
+  // expires: new Date(
+  //   Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000
+  // ),
+  expires: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000),
+  // maxAge: 900000,
+  httpOnly: true,
+};
 
+if (process.env.NODE_ENV === "production") cookieOptions.secure = true;
 const createToken = (user, statusCode, res) => {
   const token = signInToken(user._id);
+
+  //send cookie in response
+  res.cookie("jwt", token, cookieOptions);
+  user.password = undefined;
   res.status(statusCode).json({
     status: "sucess",
     token,

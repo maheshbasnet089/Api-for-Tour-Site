@@ -4,12 +4,50 @@ const morgan = require("morgan");
 const router = require("./routes /tourRoute");
 const AppError = require("./utils /appError");
 const globalErrorHandler = require("./controllers /errorController");
+const rateLimit = require("express-rate-limit");
+const helmet = require("helmet");
+const expressMongoSanitize = require("express-mongo-sanitize");
+const xss = require("xss-clean");
+const hpp = require("hpp");
 
 if (process.env.NODE_ENV == "developement") {
   app.use(morgan("tiny"));
 }
 
-app.use(express.json());
+//set secure http headers or add additional headrers
+app.use(helmet());
+
+//limit the rate of requesting the endpoint
+const rateLimiter = rateLimit({
+  max: 100,
+  windowMs: 60 * 60 * 1000,
+  message: "Too many request from this Ip address . Please try again in later",
+});
+
+app.use("/api", rateLimiter);
+
+//Parses the body data in req.body
+app.use(express.json({ limit: "10kb" }));
+
+//Data sanitization
+app.use(expressMongoSanitize());
+
+//Prevents from xss script
+app.use(xss());
+
+//http parameter pollution prevents duplicate parameters
+app.use(
+  hpp({
+    whitelist: [
+      "duration",
+      "ratingsQuantity",
+      "ratingsAverage",
+      "price",
+      "maxGroupSize",
+      "difficulty",
+    ],
+  })
+);
 
 app.use("/api/v1", router);
 
