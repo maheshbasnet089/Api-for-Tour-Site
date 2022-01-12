@@ -122,6 +122,13 @@ tourSchema.virtual("durationWeeks").get(function () {
   return this.duration / 7; //always use regular functin inside mongoose model. cause this keyword is only accesed in those function
 });
 
+//virtual populate
+tourSchema.virtual("reviews", {
+  ref: "Review",
+  localField: "_id",
+  foreignField: "tour",
+});
+
 //Document middleware, runs before .save() and .create()
 
 tourSchema.pre("save", function (next) {

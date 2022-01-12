@@ -8,6 +8,7 @@ const rateLimit = require("express-rate-limit");
 const helmet = require("helmet");
 const expressMongoSanitize = require("express-mongo-sanitize");
 const xss = require("xss-clean");
+const reviews = require("./routes /reviewRoute");
 const hpp = require("hpp");
 
 if (process.env.NODE_ENV == "developement") {
@@ -50,6 +51,7 @@ app.use(
 );
 
 app.use("/api/v1", router);
+app.use("/api/v1/reviews", reviews);
 
 app.all("*", (req, res, next) => {
   // const err = new Error(`Cannot find path ${req.originalUrl} `);
