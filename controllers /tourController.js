@@ -4,6 +4,23 @@ const AppError = require("../utils /appError");
 
 function tourController() {
   return {
+    async getAllTours(req, res) {
+      const features = new APIFeatures(Tour.find(), req.query)
+        .filter()
+        .limitFields()
+        .sort()
+        .paginate();
+      const tours = await features.query;
+      console.log(tours);
+      res.status(200).json({
+        status: "success",
+
+        data: {
+          result: tours.length,
+          tours,
+        },
+      });
+    },
     // async topTours(req, res) {
     //   req.query.limit = "5";
     //   req.query.sort = "-ratingsAverage,price";
@@ -30,22 +47,7 @@ function tourController() {
         },
       });
     },
-    async getAllTours(req, res) {
-      const features = new APIFeatures(Tour.find(), req.query)
-        .filter()
-        .limitFields()
-        .sort()
-        .paginate();
-      const tours = await features.query;
-      res.status(200).json({
-        status: "success",
 
-        data: {
-          result: tours.length,
-          tours,
-        },
-      });
-    },
     async deleteTour(req, res, next) {
       try {
         const tour = await Tour.findByIdAndDelete(req.params.id);
