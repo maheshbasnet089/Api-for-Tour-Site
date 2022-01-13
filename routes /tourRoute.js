@@ -15,17 +15,17 @@ router
   .route("/getMonthlyPlan/:year")
   .get(catchAsync(tourController.getTourStats));
 
-router.route("/:id").get(catchAsync(tourController.getTour));
-
 router
-  .route("/delete/:id")
-  .get(
+  .route("/:id")
+  .get(catchAsync(tourController.getTour))
+  .patch(catchAsync(tourController.updateTour))
+  .delete(
     authController.protectMiddleware,
     authController.restrictTo("admin", "lead-guide"),
     catchAsync(tourController.deleteTour)
   );
 
-router.route("/update/:id").patch(catchAsync(tourController.updateTour));
+router.route("/delete/:id");
 
 //Reviews route for tour
 

@@ -9,9 +9,13 @@ router
   .post(
     authController.protectMiddleware,
     authController.restrictTo("user"),
+    reviewController.setReviewIds,
     catchAsync(reviewController.createReview)
   );
 
-router.route("/:id").delete(reviewController.deleteReview);
+router
+  .route("/:id")
+  .delete(reviewController.deleteReview)
+  .patch(reviewController.updateReview);
 
 module.exports = router;

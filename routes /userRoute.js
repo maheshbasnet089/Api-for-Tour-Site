@@ -28,7 +28,14 @@ router
     catchAsync(userController.deleteMe)
   );
 
-router.route("/:id").delete(userController.deleteUser);
+router
+  .route("/:id")
+  .delete(userController.deleteUser)
+  .patch(
+    authController.protectMiddleware,
+    authController.restrictTo("admin"),
+    userController.updateUser
+  );
 router.route("/").get(userController.getAllUsers);
 
 module.exports = router;
