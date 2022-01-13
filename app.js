@@ -1,15 +1,16 @@
 const express = require("express");
 const app = express();
 const morgan = require("morgan");
-const router = require("./routes /tourRoute");
 const AppError = require("./utils /appError");
 const globalErrorHandler = require("./controllers /errorController");
 const rateLimit = require("express-rate-limit");
 const helmet = require("helmet");
 const expressMongoSanitize = require("express-mongo-sanitize");
 const xss = require("xss-clean");
-const reviews = require("./routes /reviewRoute");
+const reviewRouter = require("./routes /reviewRoute");
 const hpp = require("hpp");
+const userRouter = require("./routes /userRoute");
+const tourRouter = require("./routes /tourRoute.js");
 
 if (process.env.NODE_ENV == "developement") {
   app.use(morgan("tiny"));
@@ -50,8 +51,10 @@ app.use(
   })
 );
 
-app.use("/api/v1", router);
-app.use("/api/v1/reviews", reviews);
+app.use("/api/v1/users", userRouter);
+app.use("/api/v1/tours", tourRouter);
+
+app.use("/api/v1/reviews", reviewRouter);
 
 app.all("*", (req, res, next) => {
   // const err = new Error(`Cannot find path ${req.originalUrl} `);

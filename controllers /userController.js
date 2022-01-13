@@ -1,5 +1,6 @@
 const User = require("../model/userModel");
 const AppError = require("../utils /appError");
+const factoryFunction = require("../controllers /handlerFactory");
 
 // var filterObj = (obj, ...allowedFields) => {
 //   const newObj = {};
@@ -17,6 +18,8 @@ exports.getAllUsers = async (req, res, next) => {
     users,
   });
 };
+
+exports.deleteUser = factoryFunction.deleteOne(User);
 
 exports.updateMe = async (req, res, next) => {
   // body contain password credentials ignore them and throw err
