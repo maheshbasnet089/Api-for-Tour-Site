@@ -3,7 +3,7 @@ const authController = require("../controllers /authController");
 const router = require("express").Router();
 const catchAsync = require("../utils /catchAsync");
 const userController = require("../controllers /userController");
-const reviewController = require("../controllers /reviewController");
+const reviewRoutes = require("../routes /reviewRoute");
 
 router.post("/users/signup", catchAsync(authController.signUp));
 router.post("/users/login", catchAsync(authController.logIn));
@@ -59,12 +59,14 @@ router.get("/users", userController.getAllUsers);
 
 //Reviews route for tour
 
-router
-  .route("/tours/:tourId/reviews")
-  .post(
-    authController.protectMiddleware,
-    authController.restrictTo("user"),
-    reviewController.createReview
-  );
+router.use("/tours/:tourId/reviews", reviewRoutes);
+
+// router
+//   .route("/tours/:tourId/reviews")
+//   .post(
+//     authController.protectMiddleware,
+//     authController.restrictTo("user"),
+//     reviewController.createReview
+//   );
 
 module.exports = router;
