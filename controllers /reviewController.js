@@ -1,7 +1,9 @@
 const Review = require("../model/reviewModel");
 
 exports.getAllReviews = async (req, res, next) => {
-  const reviews = await Review.find();
+  const filter = {};
+  if (req.params.tourId) filter = { tour: req.params.tourId };
+  const reviews = await Review.find(filter);
   res.status(200).json({
     status: "success",
     lenth: reviews.length,
