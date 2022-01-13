@@ -11,13 +11,7 @@ const factoryFunction = require("../controllers /handlerFactory");
 //     return newObj;
 //   });
 // };
-exports.getAllUsers = async (req, res, next) => {
-  const users = await User.find();
-  res.status(200).json({
-    status: "success",
-    users,
-  });
-};
+exports.getAllUsers = factoryFunction.getAll(User);
 
 exports.deleteUser = factoryFunction.deleteOne(User);
 
@@ -50,6 +44,7 @@ exports.updateMe = async (req, res, next) => {
     },
   });
 };
+exports.getUser = factoryFunction.getOne(User);
 
 exports.updateUser = factoryFunction.updateOne(User);
 

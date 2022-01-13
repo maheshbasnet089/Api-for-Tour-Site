@@ -27,15 +27,16 @@ router
     authController.protectMiddleware,
     catchAsync(userController.deleteMe)
   );
+router.route("/").get(catchAsync(userController.getAllUsers));
 
 router
   .route("/:id")
+  .get(catchAsync(userController.getUser))
   .delete(userController.deleteUser)
   .patch(
     authController.protectMiddleware,
     authController.restrictTo("admin"),
-    userController.updateUser
+    catchAsync(userController.updateUser)
   );
-router.route("/").get(userController.getAllUsers);
 
 module.exports = router;

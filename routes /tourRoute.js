@@ -25,11 +25,9 @@ router
     catchAsync(tourController.deleteTour)
   );
 
-router.route("/delete/:id");
-
 //Reviews route for tour
 
-router.use("/tours/:tourId/reviews", reviewRoutes);
+router.use("/:tourId/reviews", reviewRoutes);
 
 // router
 //   .route("/tours/:tourId/reviews")
