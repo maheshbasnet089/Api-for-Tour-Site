@@ -11,6 +11,10 @@ const factoryFunction = require("../controllers /handlerFactory");
 //     return newObj;
 //   });
 // };
+exports.getMe = (req, res, next) => {
+  req.params.id = req.user.id;
+  next();
+};
 exports.getAllUsers = factoryFunction.getAll(User);
 
 exports.deleteUser = factoryFunction.deleteOne(User);

@@ -28,6 +28,13 @@ router
     catchAsync(userController.deleteMe)
   );
 router.route("/").get(catchAsync(userController.getAllUsers));
+router
+  .route("/me")
+  .get(
+    authController.protectMiddleware,
+    userController.getMe,
+    userController.getUser
+  );
 
 router
   .route("/:id")
