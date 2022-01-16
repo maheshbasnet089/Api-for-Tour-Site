@@ -10,31 +10,21 @@ router
   .route("/resetPassword/:token")
   .patch(catchAsync(authController.resetPassword));
 
+router.use(authController.protectMiddleware);
+
 router
   .route("/updateMyPassword")
-  .patch(
-    authController.protectMiddleware,
-    catchAsync(authController.updatePassword)
-  );
+  .patch(catchAsync(authController.updatePassword));
 
-router
-  .route("/updateMe")
-  .patch(authController.protectMiddleware, catchAsync(userController.updateMe));
+router.route("/updateMe").patch(catchAsync(userController.updateMe));
 
-router
-  .route("/deleteMe")
-  .delete(
-    authController.protectMiddleware,
-    catchAsync(userController.deleteMe)
-  );
+router.route("/deleteMe").delete(catchAsync(userController.deleteMe));
+router.route("/me").get(userController.getMe, userController.getUser);
+
+// runs on every request after this middleware
+router.use(authController.restrictTo("admin"));
+
 router.route("/").get(catchAsync(userController.getAllUsers));
-router
-  .route("/me")
-  .get(
-    authController.protectMiddleware,
-    userController.getMe,
-    userController.getUser
-  );
 
 router
   .route("/:id")
@@ -42,7 +32,6 @@ router
   .delete(userController.deleteUser)
   .patch(
     authController.protectMiddleware,
-    authController.restrictTo("admin"),
     catchAsync(userController.updateUser)
   );
 
